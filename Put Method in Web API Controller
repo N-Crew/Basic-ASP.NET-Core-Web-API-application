@@ -1,0 +1,32 @@
+public class StudentController : ApiController
+{
+    public StudentController()
+    {
+    }
+
+    public IHttpActionResult Put(StudentViewModel student)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest("Not a valid model");
+
+        using (var ctx = new SchoolDBEntities())
+        {
+            var existingStudent = ctx.Students.Where(s => s.StudentID == student.Id)
+                                                    .FirstOrDefault<Student>();
+
+            if (existingStudent != null)
+            {
+                existingStudent.FirstName = student.FirstName;
+                existingStudent.LastName = student.LastName;
+
+                ctx.SaveChanges();
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        return Ok();
+    }
+}
